@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ti-Clic — Apps par Cocktail</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0f14;
+      --surface:   #13161d;
+      --border:    #1e2230;
+      --text:      #e8eaf0;
+      --muted:     #6b7280;
+      --toilette:  #00c9a7;
+      --toilette2: #00876f;
+      --crypto:    #f7931a;
+      --crypto2:   #c4700e;
+      --white:     #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.025;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 2.5rem;
+      background: rgba(13, 15, 20, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      text-decoration: none;
+    }
+
+    .nav-logo span { color: var(--toilette); }
+
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* gradient blobs */
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,201,167,0.12) 0%, transparent 70%);
+      top: 10%; left: -10%;
+      pointer-events: none;
+      animation: blobMove 12s ease-in-out infinite alternate;
+    }
+
+    .blob2 {
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(247,147,26,0.1) 0%, transparent 70%);
+      bottom: 5%; right: -8%;
+      pointer-events: none;
+      animation: blobMove2 15s ease-in-out infinite alternate;
+    }
+
+    @keyframes blobMove  { to { transform: translate(40px, 30px); } }
+    @keyframes blobMove2 { to { transform: translate(-30px, -40px); } }
+
+    .hero-badge {
+      display: inline-block;
+      background: var(--border);
+      border: 1px solid #2a2f40;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.35rem 1rem;
+      border-radius: 999px;
+      margin-bottom: 1.8rem;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      max-width: 800px;
+      animation: fadeUp 0.7s ease 0.1s both;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--toilette), var(--crypto));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      margin-top: 1.5rem;
+      color: var(--muted);
+      font-size: 1.1rem;
+      max-width: 520px;
+      font-weight: 300;
+      animation: fadeUp 0.7s ease 0.2s both;
+    }
+
+    .hero-cta {
+      margin-top: 2.5rem;
+      display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+      animation: fadeUp 0.7s ease 0.3s both;
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 1.75rem;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: transform .2s, opacity .2s;
+    }
+    .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+    .btn-primary {
+      background: var(--toilette);
+      color: #000;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .scroll-hint {
+      margin-top: 5rem;
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      color: var(--muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      animation: fadeUp 0.7s ease 0.5s both;
+    }
+
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--muted), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; transform: scaleY(1); }
+      50%       { opacity: 1;   transform: scaleY(1.2); }
+    }
+
+    /* ── SECTION COMMUNE ── */
+    section { padding: 6rem 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+
+    /* ── APPS ── */
+    #apps { background: var(--bg); }
+
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .app-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform .3s, border-color .3s;
+    }
+
+    .app-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .app-card.toilette { border-top: 3px solid var(--toilette); }
+    .app-card.crypto   { border-top: 3px solid var(--crypto); }
+
+    .app-card::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .app-card.toilette::before {
+      background: radial-gradient(circle, rgba(0,201,167,0.08) 0%, transparent 70%);
+    }
+
+    .app-card.crypto::before {
+      background: radial-gradient(circle, rgba(247,147,26,0.08) 0%, transparent 70%);
+    }
+
+    .app-icon {
+      width: 64px; height: 64px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .app-card.toilette .app-icon { background: rgba(0,201,167,0.15); }
+    .app-card.crypto   .app-icon { background: rgba(247,147,26,0.15); }
+
+    .app-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      margin-bottom: 0.75rem;
+    }
+
+    .app-card.toilette .app-tag { background: rgba(0,201,167,0.15); color: var(--toilette); }
+    .app-card.crypto   .app-tag { background: rgba(247,147,26,0.15); color: var(--crypto); }
+
+    .app-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.6rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+
+    .app-desc {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .app-features {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .app-features li {
+      display: flex; align-items: center; gap: 0.6rem;
+      font-size: 0.88rem;
+      color: var(--text);
+    }
+
+    .app-features li::before {
+      content: '✓';
+      font-size: 0.8rem;
+      font-weight: 700;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .app-card.toilette .app-features li::before { color: var(--toilette); background: rgba(0,201,167,0.1); }
+    .app-card.crypto   .app-features li::before { color: var(--crypto);   background: rgba(247,147,26,0.1); }
+
+    .app-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .app-status {
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .app-card.toilette .status-dot { background: var(--toilette); }
+    .app-card.crypto   .status-dot { background: var(--crypto); }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .btn-app {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.55rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: transform .2s, opacity .2s;
+    }
+
+    .btn-app:hover { transform: translateY(-1px); opacity: 0.85; }
+    .btn-app.disabled {
+      opacity: 0.4;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .app-card.toilette .btn-app { background: var(--toilette); color: #000; }
+    .app-card.crypto   .btn-app { background: var(--crypto);   color: #000; }
+
+    /* ── À PROPOS ── */
+    #apropos {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .about-text p {
+      color: var(--muted);
+      margin-top: 1rem;
+      line-height: 1.8;
+    }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .stat-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+    }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 2rem;
+      background: linear-gradient(135deg, var(--toilette), var(--crypto));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    /* ── CONTACT ── */
+    #contact { background: var(--bg); }
+
+    .contact-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-box::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center top, rgba(0,201,167,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .contact-box p {
+      color: var(--muted);
+      margin: 1rem auto 2rem;
+      max-width: 460px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+    }
+
+    footer p {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    footer strong { color: var(--text); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.2rem; }
+      .nav-links { display: none; }
+      .apps-grid { grid-template-columns: 1fr; }
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .about-stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#"><span>Ti</span>-Clic</a>
+    <ul class="nav-links">
+      <li><a href="#apps">Applications</a></li>
+      <li><a href="#apropos">À propos</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="blob2"></div>
+    <span class="hero-badge">🇶🇨 Studio Indépendant · Québec</span>
+    <h1>Des apps simples.<br />Des idées <em>qui cliquent</em>.</h1>
+    <p class="hero-sub">Ti-Clic, c'est le studio de Cocktail — un développeur québécois qui fabrique des applications utiles, franches et bien fignolées.</p>
+    <div class="hero-cta">
+      <a href="#apps" class="btn btn-primary">Voir les apps ↓</a>
+      <a href="#contact" class="btn btn-outline">Me contacter</a>
+    </div>
+    <div class="scroll-hint">
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- APPS -->
+  <section id="apps">
+    <div class="container">
+      <p class="section-label fade-in">Nos applications</p>
+      <h2 class="section-title fade-in">Deux apps.<br />Deux utilités du quotidien.</h2>
+
+      <div class="apps-grid">
+
+        <!-- CLICK'N TOILETTE -->
+        <div class="app-card toilette fade-in">
+          <div class="app-icon">🚻</div>
+          <span class="app-tag">Android · Bientôt disponible</span>
+          <h3 class="app-name">Click'n Toilette</h3>
+          <p class="app-desc">Trouvez les toilettes publiques les plus proches, rapidement et sans chichi. Géolocalisation en temps réel, carte interactive, et une base de données couvrant Québec, Lévis et Montréal.</p>
+          <ul class="app-features">
+            <li>Plus de 500 emplacements référencés</li>
+            <li>Couverture : Québec · Lévis · Montréal</li>
+            <li>Mode urgence — toilette la plus proche en 1 tap</li>
+            <li>Thème sombre · 100% gratuit</li>
+            <li>Fonctionne sans compte ni inscription</li>
+          </ul>
+          <div class="app-footer">
+            <span class="app-status">
+              <span class="status-dot"></span>
+              En développement actif
+            </span>
+            <a href="#" class="btn-app disabled">Play Store (bientôt)</a>
+          </div>
+        </div>
+
+        <!-- TRACKER CRYPTO -->
+        <div class="app-card crypto fade-in">
+          <div class="app-icon">₿</div>
+          <span class="app-tag">Android · Bientôt disponible</span>
+          <h3 class="app-name">Tracker Crypto</h3>
+          <p class="app-desc">Suivez votre portefeuille de cryptomonnaies en dollars canadiens, en temps réel. Historique de transactions, graphiques de performance, et zéro dépendance au cloud — tout reste sur votre appareil.</p>
+          <ul class="app-features">
+            <li>Prix en temps réel via Binance</li>
+            <li>Portefeuille 100% local — vos données restent les vôtres</li>
+            <li>Historique de transactions complet</li>
+            <li>Graphiques de performance interactifs</li>
+            <li>Sauvegarde JSON en un tap</li>
+          </ul>
+          <div class="app-footer">
+            <span class="app-status">
+              <span class="status-dot"></span>
+              Bientôt sur le Play Store
+            </span>
+            <a href="#" class="btn-app disabled">Play Store (bientôt)</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- À PROPOS -->
+  <section id="apropos">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-text fade-in">
+          <p class="section-label">À propos</p>
+          <h2 class="section-title">Fait au Québec,<br />avec soin.</h2>
+          <p>Ti-Clic, c'est Cocktail — développeur indépendant basé au Québec. Je conçois des applications Android qui répondent à de vrais besoins du quotidien, sans complexité inutile.</p>
+          <p style="margin-top: 1rem;">Mes apps sont gratuites, respectueuses de la vie privée, et construites pour durer. Pas de pub, pas de collecte de données, pas de compte obligatoire.</p>
+        </div>
+        <div class="about-stats fade-in">
+          <div class="stat-box">
+            <div class="stat-num">2</div>
+            <div class="stat-label">Apps en développement</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num">538+</div>
+            <div class="stat-label">Toilettes référencées</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num">3</div>
+            <div class="stat-label">Villes couvertes</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num">0$</div>
+            <div class="stat-label">Prix de nos apps</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <div class="contact-box fade-in">
+        <p class="section-label">Contact</p>
+        <h2 class="section-title">Une idée? Un bug?<br />On veut savoir.</h2>
+        <p>Pour toute question, suggestion ou signalement d'erreur sur nos données, écrivez-nous directement. On répond vite.</p>
+        <a href="mailto:contact@ti-clic.ca" class="btn btn-primary" style="font-size:1rem; padding: 0.85rem 2rem;">
+          ✉️ contact@ti-clic.ca
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 <strong>Ti-Clic</strong> · Studio indépendant québécois · Fait avec ☕ par <strong>Cocktail</strong></p>
+  </footer>
+
+  <script>
+    // Scroll fade-in
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // Smooth anchor
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+      });
+    });
+  </script>
+</body>
+</html>
